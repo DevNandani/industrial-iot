@@ -1,0 +1,87 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ machine.name }} | Machine Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f6fa;
+            color: #1f2937;
+            margin: 0;
+            padding: 24px;
+        }
+        .container { max-width: 1000px; margin: auto; }
+        .card {
+            background: white;
+            padding: 22px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px #00000012;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #2563eb;
+            text-decoration: none;
+        }
+        .temperature { font-size: 32px; font-weight: bold; }
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: left;
+        }
+        th { background: #f9fafb; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a class="back-link" href="/">&#8592; Back to Dashboard</a>
+
+    <div class="card">
+        <h1>{{ machine.name }}</h1>
+        <p><strong>Machine ID:</strong> {{ machine.machine_id }}</p>
+        <p><strong>Location:</strong> {{ machine.location|default:"Not specified" }}</p>
+        <p><strong>Status:</strong> {{ machine.status }}</p>
+        <p class="temperature">{{ machine.temperature }} &deg;C</p>
+
+        {% if machine.temperature >= 70 %}
+            <p><strong>Health:</strong> CRITICAL</p>
+        {% elif machine.temperature >= 60 %}
+            <p><strong>Health:</strong> WARNING</p>
+        {% else %}
+            <p><strong>Health:</strong> NORMAL</p>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <h2>Temperature History</h2>
+        {% if temperature_logs %}
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Recorded At</th>
+                        <th>Temperature (&deg;C)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in temperature_logs %}
+                    <tr>
+                        <td>{{ log.recorded_at|date:"d M Y, H:i:s" }}</td>
+                        <td>{{ log.temperature }} &deg;C</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <p>No temperature history is available for this machine yet.</p>
+        {% endif %}
+    </div>
+</div>
+</body>
+</html>
